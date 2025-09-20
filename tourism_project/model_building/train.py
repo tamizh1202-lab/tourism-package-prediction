@@ -18,12 +18,16 @@ import mlflow
 mlflow.set_tracking_uri("https://a0c5b58e9100.ngrok-free.app")
 mlflow.set_experiment("MLOps_experiment")
 
+Xtrain_path = "hf://datasets/tamizh1296/tourist-package-prediction/Xtrain.csv"
+Xtest_path = "hf://datasets/tamizh1296/tourist-package-prediction/Xtest.csv"
+ytrain_path = "hf://datasets/tamizh1296/tourist-package-prediction/ytrain.csv"
+ytest_path = "hf://datasets/tamizh1296/tourist-package-prediction/ytest.csv"
 
 # Load train/test data
-Xtrain = pd.read_csv("tourism-package-prediction/Xtrain.csv")
-Xtest = pd.read_csv("tourism-package-prediction/Xtest.csv")
-ytrain = pd.read_csv("tourism-package-prediction/ytrain.csv").squeeze()
-ytest = pd.read_csv("tourism-package-prediction/ytest.csv").squeeze()
+Xtrain = pd.read_csv(Xtrain_path)
+Xtest = pd.read_csv(Xtest_path)
+ytrain = pd.read_csv(ytrain_path).squeeze()
+ytest = pd.read_csv(ytest_path).squeeze()
 
 print("Data loaded successfully.")
 
