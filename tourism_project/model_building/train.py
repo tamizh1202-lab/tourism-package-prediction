@@ -13,12 +13,11 @@ import joblib
 from huggingface_hub import HfApi, create_repo
 from huggingface_hub.utils import RepositoryNotFoundError, HfHubHTTPError
 import os
+import mlflow
 
-# Set the tracking URL for MLflow
-mlflow.set_tracking_uri(public_url)
-
-# Set the name for the experiment
+mlflow.set_tracking_uri("https://86e3d6a87c9a.ngrok-free.app")
 mlflow.set_experiment("MLOps_experiment")
+
 
 # Load train/test data
 Xtrain = pd.read_csv("tourism_project/data/Xtrain.csv")
