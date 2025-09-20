@@ -20,10 +20,10 @@ mlflow.set_experiment("MLOps_experiment")
 
 
 # Load train/test data
-Xtrain = pd.read_csv("tourism_project/data/Xtrain.csv")
-Xtest = pd.read_csv("tourism_project/data/Xtest.csv")
-ytrain = pd.read_csv("tourism_project/data/ytrain.csv").squeeze()
-ytest = pd.read_csv("tourism_project/data/ytest.csv").squeeze()
+Xtrain = pd.read_csv("tourism-package-prediction/Xtrain.csv")
+Xtest = pd.read_csv("tourism-package-prediction/Xtest.csv")
+ytrain = pd.read_csv("tourism-package-prediction/ytrain.csv").squeeze()
+ytest = pd.read_csv("tourism-package-prediction/ytest.csv").squeeze()
 
 print("Data loaded successfully.")
 
