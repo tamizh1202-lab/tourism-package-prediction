@@ -18,6 +18,9 @@ import mlflow
 mlflow.set_tracking_uri("https://a0c5b58e9100.ngrok-free.app")
 mlflow.set_experiment("MLOps_experiment")
 
+# Initialize HF API with token from environment
+api = HfApi(token=os.getenv("HF_TOKEN"))
+
 Xtrain_path = "hf://datasets/tamizh1296/tourist-package-prediction/Xtrain.csv"
 Xtest_path = "hf://datasets/tamizh1296/tourist-package-prediction/Xtest.csv"
 ytrain_path = "hf://datasets/tamizh1296/tourist-package-prediction/ytrain.csv"
