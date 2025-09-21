@@ -45,6 +45,9 @@ numeric_features = [
 # All remaining columns are assumed to be one-hot encoded categorical columns
 categorical_features = ['TypeofContact', 'Occupation', 'MaritalStatus', 'ProductPitched', 'Designation']
 
+print("Columns in Xtrain:", Xtrain.columns.tolist())
+print("Numeric features defined:", numeric_features)
+
 # Handle class imbalance
 class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
 
