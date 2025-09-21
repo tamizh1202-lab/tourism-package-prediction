@@ -43,7 +43,7 @@ numeric_features = [
 ]
 
 # All remaining columns are assumed to be one-hot encoded categorical columns
-categorical_features = [col for col in Xtrain.columns if col not in numeric_features]
+categorical_features = ['TypeofContact', 'Occupation', 'MaritalStatus', 'ProductPitched', 'Designation']
 
 # Handle class imbalance
 class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
@@ -77,6 +77,15 @@ grid_search.fit(Xtrain, ytrain)
 # Best model
 best_model = grid_search.best_estimator_
 print("Best Params:\n", grid_search.best_params_)
+
+with mlflow.start_run():
+    mlflow.log_params(grid_search.best_params_)
+    mlflow.log_metrics({
+        "train_accuracy": accuracy_score(ytrain, y_pred_train),
+        "test_accuracy": accuracy_score(ytest, y_pred_test),
+        "test_recall": recall_score(ytest, y_pred_test)
+    })
+    mlflow.sklearn.log_model(best_model, "tourism_model")
 
 # Predict
 y_pred_train = best_model.predict(Xtrain)
