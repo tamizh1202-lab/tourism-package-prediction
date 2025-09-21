@@ -52,22 +52,10 @@ print("Numeric features defined:", numeric_features)
 class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
 
 
-if categorical_features:  # Case 1: raw categorical columns
-    preprocessor = make_column_transformer(
-        (StandardScaler(), numeric_features),
-        remainder='drop'
-    )
-else:  # Case 2: already one-hot encoded
-    preprocessor = make_column_transformer(
-        (StandardScaler(), numeric_features),
-        remainder='passthrough'
-    )
-
-# Preprocessing pipeline
-#preprocessor = make_column_transformer(
-    #(StandardScaler(), numeric_features),
-    #(OneHotEncoder(handle_unknown='ignore'), categorical_features), remainder = 'passthrough'
-#)
+#Preprocessing pipeline
+preprocessor = make_column_transformer(
+    (StandardScaler(), numeric_features),remainder = 'passthrough'
+)
 
 # Define XGBoost classifier
 xgb_model = xgb.XGBClassifier(scale_pos_weight=class_weight, random_state=1, use_label_encoder=False, eval_metric='logloss')
