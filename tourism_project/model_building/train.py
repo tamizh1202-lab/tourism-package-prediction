@@ -41,8 +41,7 @@ categorical_features = ['TypeofContact', 'Occupation', 'MaritalStatus', 'Product
 # Preprocessing pipeline
 # -----------------------
 preprocessor = ColumnTransformer(transformers=[
-    ('num', StandardScaler(), numeric_features),
-    ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+    ('num', StandardScaler(), numeric_features)
 ])
 
 # -----------------------
