@@ -27,26 +27,24 @@ ytest  = pd.read_csv("hf://datasets/tamizh1296/tourism-package-prediction/ytest.
 
 print("Data loaded successfully.")
 
-# -----------------------
-# Identify feature types
-# -----------------------
-numeric_features = ['Age','CityTier','NumberOfPersonVisiting','PreferredPropertyStar',
-                    'NumberOfTrips','NumberOfChildrenVisiting','MonthlyIncome',
-                    'PitchSatisfactionScore','NumberOfFollowups','DurationOfPitch',
-                    'Passport','OwnCar','Gender']
+numeric_features = [
+    'Age','CityTier','NumberOfPersonVisiting','PreferredPropertyStar',
+    'NumberOfTrips','NumberOfChildrenVisiting','MonthlyIncome',
+    'PitchSatisfactionScore','NumberOfFollowups','DurationOfPitch'
+]
 
-categorical_features = ['TypeofContact', 'Occupation', 'MaritalStatus', 'ProductPitched', 'Designation']
+categorical_features = [
+    'Gender', 'TypeofContact', 'Passport', 'OwnCar',
+    'Occupation', 'MaritalStatus', 'Designation', 'ProductPitched'
+]
 
-# -----------------------
-# Preprocessing pipeline
-# -----------------------
-preprocessor = ColumnTransformer(transformers=[
-    ('num', StandardScaler(), numeric_features)
-])
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', StandardScaler(), numeric_features),
+        ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+    ]
+)
 
-# -----------------------
-# XGBoost classifier
-# -----------------------
 class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
 xgb_model = xgb.XGBClassifier(
     scale_pos_weight=class_weight,
