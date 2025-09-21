@@ -19,13 +19,13 @@ age = st.number_input("Age", 18, 100, 30)
 typeof_contact = st.selectbox("Type of Contact", ["Company Invited", "Self Inquiry"])
 city_tier = st.selectbox("City Tier", [1, 2, 3])
 occupation = st.selectbox("Occupation", ["Salaried", "Freelancer", "Large Business", "Small Business"])
-gender = st.selectbox("Gender", ["Male", "Female"])
+gender = 0 if gender=="Male" else 1,  
 num_person_visiting = st.number_input("Number of Persons Visiting", 1, 10, 2)
 preferred_property_star = st.number_input("Preferred Property Star", 1, 5, 3)
 marital_status = st.selectbox("Marital Status", ["Single", "Married", "Divorced","Unmarried"])
 num_trips = st.number_input("Number of Trips per Year", 0, 50, 3)
-passport = st.selectbox("Has Passport?", ["No", "Yes"])
-own_car = st.selectbox("Owns Car?", ["No", "Yes"])
+passport = 0 if passport=="No" else 1,
+own_car = 0 if own_car=="No" else 1,
 num_children_visiting = st.number_input("Number of Children (below 5) Visiting", 0, 5, 0)
 designation = st.selectbox("Designation", ["Manager", "Executive", "AVP", "VP", "Senior Manager"])
 monthly_income = st.number_input("Monthly Income", 5000, 1000000, 50000)
