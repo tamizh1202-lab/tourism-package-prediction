@@ -14,7 +14,7 @@ import xgboost as xgb
 # -----------------------
 # MLflow setup
 # -----------------------
-mlflow.set_tracking_uri("http://localhost:5000")
+mlflow.set_tracking_uri("https://f0f58b09af57.ngrok-free.app")
 mlflow.set_experiment("MLOps_experiment")
 
 # -----------------------
