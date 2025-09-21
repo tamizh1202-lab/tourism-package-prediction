@@ -1,90 +1,102 @@
-# for data manipulation
+import os
 import pandas as pd
+import joblib
+import mlflow
+from huggingface_hub import HfApi, create_repo
+from huggingface_hub.utils import RepositoryNotFoundError
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import make_column_transformer
-from sklearn.pipeline import make_pipeline
-# for model training, tuning, and evaluation
-import xgboost as xgb
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score, classification_report, recall_score
-# for model serialization
-import joblib
-# for Hugging Face Hub
-from huggingface_hub import HfApi, create_repo
-from huggingface_hub.utils import RepositoryNotFoundError, HfHubHTTPError
-import os
-import mlflow
+import xgboost as xgb
 
+# -----------------------
+# MLflow setup
+# -----------------------
 mlflow.set_tracking_uri("http://localhost:5000")
 mlflow.set_experiment("MLOps_experiment")
 
-# Initialize HF API with token from environment
-api = HfApi(token=os.getenv("HF_TOKEN"))
-
-Xtrain_path = "hf://datasets/tamizh1296/tourism-package-prediction/Xtrain.csv"
-Xtest_path  = "hf://datasets/tamizh1296/tourism-package-prediction/Xtest.csv"
-ytrain_path = "hf://datasets/tamizh1296/tourism-package-prediction/ytrain.csv"
-ytest_path  = "hf://datasets/tamizh1296/tourism-package-prediction/ytest.csv"
-
-# Load train/test data
-Xtrain = pd.read_csv(Xtrain_path).drop(columns=['Unnamed: 0'], errors='ignore')
-Xtest = pd.read_csv(Xtest_path).drop(columns=['Unnamed: 0'], errors='ignore')
-ytrain = pd.read_csv(ytrain_path).squeeze()
-ytest = pd.read_csv(ytest_path).squeeze()
+# -----------------------
+# Load data
+# -----------------------
+Xtrain = pd.read_csv("hf://datasets/tamizh1296/tourism-package-prediction/Xtrain.csv").drop(columns=['Unnamed: 0'], errors='ignore')
+Xtest  = pd.read_csv("hf://datasets/tamizh1296/tourism-package-prediction/Xtest.csv").drop(columns=['Unnamed: 0'], errors='ignore')
+ytrain = pd.read_csv("hf://datasets/tamizh1296/tourism-package-prediction/ytrain.csv").squeeze()
+ytest  = pd.read_csv("hf://datasets/tamizh1296/tourism-package-prediction/ytest.csv").squeeze()
 
 print("Data loaded successfully.")
 
-# Identify numeric and categorical features
-numeric_features = [
-    'Age','CityTier','NumberOfPersonVisiting','PreferredPropertyStar',
-    'NumberOfTrips','NumberOfChildrenVisiting','MonthlyIncome',
-    'PitchSatisfactionScore','NumberOfFollowups','DurationOfPitch',
-    'Passport','OwnCar','Gender'
-]
+# -----------------------
+# Identify feature types
+# -----------------------
+numeric_features = ['Age','CityTier','NumberOfPersonVisiting','PreferredPropertyStar',
+                    'NumberOfTrips','NumberOfChildrenVisiting','MonthlyIncome',
+                    'PitchSatisfactionScore','NumberOfFollowups','DurationOfPitch',
+                    'Passport','OwnCar','Gender']
 
-# All remaining columns are assumed to be one-hot encoded categorical columns
 categorical_features = ['TypeofContact', 'Occupation', 'MaritalStatus', 'ProductPitched', 'Designation']
 
-print("Columns in Xtrain:", Xtrain.columns.tolist())
-print("Numeric features defined:", numeric_features)
+# -----------------------
+# Preprocessing pipeline
+# -----------------------
+preprocessor = ColumnTransformer(transformers=[
+    ('num', StandardScaler(), numeric_features),
+    ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+])
 
-# Handle class imbalance
+# -----------------------
+# XGBoost classifier
+# -----------------------
 class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
-
-
-#Preprocessing pipeline
-preprocessor = make_column_transformer(
-    (StandardScaler(), numeric_features),remainder = 'passthrough'
+xgb_model = xgb.XGBClassifier(
+    scale_pos_weight=class_weight,
+    random_state=1,
+    use_label_encoder=False,
+    eval_metric='logloss'
 )
 
-# Define XGBoost classifier
-xgb_model = xgb.XGBClassifier(scale_pos_weight=class_weight, random_state=1, use_label_encoder=False, eval_metric='logloss')
+# -----------------------
+# Full pipeline
+# -----------------------
+pipeline = Pipeline([
+    ('preprocessor', preprocessor),
+    ('xgbclassifier', xgb_model)
+])
 
+# -----------------------
 # Hyperparameter grid
+# -----------------------
 param_grid = {
     'xgbclassifier__n_estimators': [50, 75, 100],
     'xgbclassifier__max_depth': [2, 3, 4],
     'xgbclassifier__colsample_bytree': [0.4, 0.5, 0.6],
     'xgbclassifier__colsample_bylevel': [0.4, 0.5, 0.6],
     'xgbclassifier__learning_rate': [0.01, 0.05, 0.1],
-    'xgbclassifier__reg_lambda': [0.4, 0.5, 0.6],
+    'xgbclassifier__reg_lambda': [0.4, 0.5, 0.6]
 }
 
-# Create pipeline
-model_pipeline = make_pipeline(preprocessor, xgb_model)
-
-# Grid search with cross-validation
-grid_search = GridSearchCV(model_pipeline, param_grid, cv=5, scoring='recall', n_jobs=-1)
+# -----------------------
+# GridSearchCV
+# -----------------------
+grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring='recall', n_jobs=-1)
 grid_search.fit(Xtrain, ytrain)
 
-# Best model
 best_model = grid_search.best_estimator_
-print("Best Params:\n", grid_search.best_params_)
+print("Best Params:", grid_search.best_params_)
 
-# Predict
+# -----------------------
+# Predictions & Evaluation
+# -----------------------
 y_pred_train = best_model.predict(Xtrain)
-y_pred_test = best_model.predict(Xtest)
+y_pred_test  = best_model.predict(Xtest)
 
+print("\nTraining Classification Report:\n", classification_report(ytrain, y_pred_train))
+print("\nTest Classification Report:\n", classification_report(ytest, y_pred_test))
+
+# -----------------------
+# MLflow logging
+# -----------------------
 with mlflow.start_run():
     mlflow.log_params(grid_search.best_params_)
     mlflow.log_metrics({
@@ -94,37 +106,30 @@ with mlflow.start_run():
     })
     mlflow.sklearn.log_model(best_model, "tourism_model")
 
-
-# Evaluation
-print("\nTraining Classification Report:")
-print(classification_report(ytrain, y_pred_train))
-
-print("\nTest Classification Report:")
-print(classification_report(ytest, y_pred_test))
-
-# Save the model
-model_filename = "best_tourism_model_v1.joblib"
+# -----------------------
+# Save model locally
+# -----------------------
+model_filename = "best_tourism_model_v2_pipeline.joblib"
 joblib.dump(best_model, model_filename)
 
+# -----------------------
 # Upload to Hugging Face
+# -----------------------
+api = HfApi(token=os.getenv("HF_TOKEN"))
 repo_id = "tamizh1296/tourism-package-model"
 repo_type = "model"
-api = HfApi(token=os.getenv("HF_TOKEN"))
 
-# Check if repo exists
 try:
     api.repo_info(repo_id=repo_id, repo_type=repo_type)
-    print(f"Model repo '{repo_id}' already exists. Using it.")
+    print(f"Model repo '{repo_id}' already exists.")
 except RepositoryNotFoundError:
-    print(f"Model repo '{repo_id}' not found. Creating new repo...")
     create_repo(repo_id=repo_id, repo_type=repo_type, private=False)
     print(f"Model repo '{repo_id}' created.")
 
-# Upload model
 api.upload_file(
     path_or_fileobj=model_filename,
     path_in_repo=model_filename,
     repo_id=repo_id,
-    repo_type=repo_type,
+    repo_type=repo_type
 )
 print(f"Model uploaded to Hugging Face repo '{repo_id}'.")
