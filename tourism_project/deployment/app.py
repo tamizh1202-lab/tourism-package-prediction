@@ -19,13 +19,13 @@ age = st.number_input("Age", 18, 100, 30)
 typeof_contact = st.selectbox("Type of Contact", ["Company Invited", "Self Inquiry"])
 city_tier = st.selectbox("City Tier", [1, 2, 3])
 occupation = st.selectbox("Occupation", ["Salaried", "Freelancer", "Large Business", "Small Business"])
-gender = 0 if gender=="Male" else 1,  
+gender = st.selectbox("Gender", ["Male", "Female"]),
 num_person_visiting = st.number_input("Number of Persons Visiting", 1, 10, 2)
 preferred_property_star = st.number_input("Preferred Property Star", 1, 5, 3)
 marital_status = st.selectbox("Marital Status", ["Single", "Married", "Divorced","Unmarried"])
 num_trips = st.number_input("Number of Trips per Year", 0, 50, 3)
-passport = 0 if passport=="No" else 1,
-own_car = 0 if own_car=="No" else 1,
+passport = st.selectbox("Has Passport?", ["No", "Yes"])
+own_car = st.selectbox("Owns Car?", ["No", "Yes"])
 num_children_visiting = st.number_input("Number of Children (below 5) Visiting", 0, 5, 0)
 designation = st.selectbox("Designation", ["Manager", "Executive", "AVP", "VP", "Senior Manager"])
 monthly_income = st.number_input("Monthly Income", 5000, 1000000, 50000)
@@ -40,13 +40,13 @@ input_data = pd.DataFrame([{
     "TypeofContact": typeof_contact,
     "CityTier": city_tier,
     "Occupation": occupation,
-    "Gender": gender,
+    "Gender":  0 if gender=="Male" else 1,
     "NumberOfPersonVisiting": num_person_visiting,
     "PreferredPropertyStar": preferred_property_star,
     "MaritalStatus": marital_status,
     "NumberOfTrips": num_trips,
-    "Passport": passport,
-    "OwnCar": own_car,
+    "Passport": 0 if passport=="No" else 1,
+    "OwnCar": 0 if own_car=="No" else 1,
     "NumberOfChildrenVisiting": num_children_visiting,
     "Designation": designation,
     "MonthlyIncome": monthly_income,
