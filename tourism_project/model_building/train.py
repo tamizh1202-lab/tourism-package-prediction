@@ -55,7 +55,6 @@ class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
 if categorical_features:  # Case 1: raw categorical columns
     preprocessor = make_column_transformer(
         (StandardScaler(), numeric_features),
-        (OneHotEncoder(handle_unknown='ignore'), categorical_features),
         remainder='drop'
     )
 else:  # Case 2: already one-hot encoded
