@@ -26,17 +26,6 @@ df.drop(columns=['CustomerID'], inplace=True)
 # Define target
 target_col = "ProdTaken"
 
-# Binary categorical encoding
-binary_cols = ["Gender", "TypeofContact", "Passport", "OwnCar"]
-label_encoder = LabelEncoder()
-for col in binary_cols:
-    if col in df.columns:
-        df[col] = label_encoder.fit_transform(df[col].astype(str))
-
-# One-hot encode multi-class categorical variables
-multiclass_cols = ["Occupation", "MaritalStatus", "Designation", "ProductPitched"]
-df = pd.get_dummies(df, columns=multiclass_cols, drop_first=True)
-
 # Split features and target
 X = df.drop(columns=[target_col])
 y = df[target_col]
