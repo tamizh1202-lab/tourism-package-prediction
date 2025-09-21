@@ -81,6 +81,10 @@ grid_search.fit(Xtrain, ytrain)
 best_model = grid_search.best_estimator_
 print("Best Params:\n", grid_search.best_params_)
 
+# Predict
+y_pred_train = best_model.predict(Xtrain)
+y_pred_test = best_model.predict(Xtest)
+
 with mlflow.start_run():
     mlflow.log_params(grid_search.best_params_)
     mlflow.log_metrics({
@@ -90,9 +94,6 @@ with mlflow.start_run():
     })
     mlflow.sklearn.log_model(best_model, "tourism_model")
 
-# Predict
-y_pred_train = best_model.predict(Xtrain)
-y_pred_test = best_model.predict(Xtest)
 
 # Evaluation
 print("\nTraining Classification Report:")
