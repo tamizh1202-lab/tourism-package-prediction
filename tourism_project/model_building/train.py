@@ -15,7 +15,7 @@ from huggingface_hub.utils import RepositoryNotFoundError, HfHubHTTPError
 import os
 import mlflow
 
-mlflow.set_tracking_uri("https://7b5f58aed2f2.ngrok-free.app")
+mlflow.set_tracking_uri("http://localhost:5000")
 mlflow.set_experiment("MLOps_experiment")
 
 # Initialize HF API with token from environment
@@ -51,7 +51,7 @@ class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
 # Preprocessing pipeline
 preprocessor = make_column_transformer(
     (StandardScaler(), numeric_features),
-    (OneHotEncoder(handle_unknown='ignore'), categorical_features)
+    (OneHotEncoder(handle_unknown='ignore'), categorical_features), remainder = 'passthrough'
 )
 
 # Define XGBoost classifier
