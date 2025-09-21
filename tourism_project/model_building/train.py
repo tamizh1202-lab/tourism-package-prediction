@@ -36,10 +36,10 @@ print("Data loaded successfully.")
 
 # Identify numeric and categorical features
 numeric_features = [
-    'Age', 'CityTier', 'NumberOfPersonVisiting', 'PreferredPropertyStar',
-    'NumberOfTrips', 'NumberOfChildrenVisiting', 'MonthlyIncome',
-    'PitchSatisfactionScore', 'NumberOfFollowups', 'DurationOfPitch',
-    'Passport', 'OwnCar'
+    'Age','CityTier','NumberOfPersonVisiting','PreferredPropertyStar',
+    'NumberOfTrips','NumberOfChildrenVisiting','MonthlyIncome',
+    'PitchSatisfactionScore','NumberOfFollowups','DurationOfPitch',
+    'Passport','OwnCar','Gender'
 ]
 
 # All remaining columns are assumed to be one-hot encoded categorical columns
