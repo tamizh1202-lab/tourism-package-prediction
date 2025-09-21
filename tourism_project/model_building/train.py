@@ -27,8 +27,8 @@ ytrain_path = "hf://datasets/tamizh1296/tourism-package-prediction/ytrain.csv"
 ytest_path  = "hf://datasets/tamizh1296/tourism-package-prediction/ytest.csv"
 
 # Load train/test data
-Xtrain = pd.read_csv(Xtrain_path)
-Xtest = pd.read_csv(Xtest_path)
+Xtrain = pd.read_csv(Xtrain_path).drop(columns=['Unnamed: 0'], errors='ignore')
+Xtest = pd.read_csv(Xtest_path).drop(columns=['Unnamed: 0'], errors='ignore')
 ytrain = pd.read_csv(ytrain_path).squeeze()
 ytest = pd.read_csv(ytest_path).squeeze()
 
