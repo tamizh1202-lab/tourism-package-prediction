@@ -61,15 +61,6 @@ input_data = pd.DataFrame([{
     f'ProductPitched_{product_pitched}': 1
 }])
 
-# Fill missing one-hot columns with 0
-model_features = model.named_steps['columntransformer'].get_feature_names_out()
-for col in model_features:
-    if col not in input_data.columns:
-        input_data[col] = 0
-
-# Reorder columns to match training
-input_data = input_data[model_features]
-
 # --- Prediction ---
 if st.button("Predict Purchase"):
     prediction = model.predict(input_data)[0]
