@@ -21,10 +21,10 @@ mlflow.set_experiment("MLOps_experiment")
 # Initialize HF API with token from environment
 api = HfApi(token=os.getenv("HF_TOKEN"))
 
-Xtrain_path = "hf://datasets/tamizh1296/tourist-package-prediction/tree/main/Xtrain.csv"
-Xtest_path = "hf://datasets/tamizh1296/tourist-package-prediction/tree/main/Xtest.csv"
-ytrain_path = "hf://datasets/tamizh1296/tourist-package-prediction/tree/main/ytrain.csv"
-ytest_path = "hf://datasets/tamizh1296/tourist-package-prediction/tree/main/ytest.csv"
+Xtrain_path = "hf://datasets/tamizh1296/tourism-package-prediction/Xtrain.csv"
+Xtest_path  = "hf://datasets/tamizh1296/tourism-package-prediction/Xtest.csv"
+ytrain_path = "hf://datasets/tamizh1296/tourism-package-prediction/ytrain.csv"
+ytest_path  = "hf://datasets/tamizh1296/tourism-package-prediction/ytest.csv"
 
 # Load train/test data
 Xtrain = pd.read_csv(Xtrain_path)
